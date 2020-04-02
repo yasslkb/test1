@@ -1,78 +1,94 @@
-#include <iostream> 
-#include <vector> 
+#include<iostream>
+#include<vector>
+#include<iterator>
 
 using namespace std;
 
+class sommet{
+  int vals; // la valeur du sommet.
+  sommet* suivant;//pointeur vers le sommet suivant.
 
-
-class sommet {
-	int val1;     //identificateur du sommet.
-	vector<sommet>* listvoisin;      //liste des voising du sommet
 public:
-	sommet();     //constructeur d'un sommet par default.
-	sommet(int); //constructeur d'un sommet.
-	void ajouterunsommet(sommet&);
-	void afficherS();
+       void affichesomm(){
+             cout<<vals;
+            }
+        friend class listevoisin;  //on est besoin d'acceder a ces attributs.
+        friend sommet* cree_somm(int); //fonction global friend avec la class sommet pour acceder a ses membre privee.
+
 };
-sommet::sommet() {
-	val1 = NULL;
-	listvoisin = new vector<sommet>[] ;
-}
-sommet::sommet(int val1) {
-	this->val1 = val1;
-	listvoisin = new vector<sommet>[];
-}
-void sommet::ajouterunsommet(sommet& Sapasser) {
-	listvoisin->push_back(Sapasser);  //insirer un sommet a la liste des voisines d'un autre sommet.
-
-}
-void sommet::afficherS() {
-	cout << "liste des voising du" << val1 << ":" << endl;
-	for (auto i = listvoisin->begin(); i != listvoisin->end(); i++) {
-		cout << listvoisin[i].val1;
-	}
+sommet* cree_somm(int vals){
+    sommet*neveau_som=new sommet;
+    neveau_som->vals=vals;
+    neveau_som->suivant=NULL;
+    return neveau_som;
 }
 
-
-class Graph {
-	vector<sommet> *somdugraph; //la liste des sommet du graph.
+class listevoisin{
+  sommet* head;
 public:
-	Graph();//constructor du graph.
-	void ajo_som_graph(sommet&);//ajouter un sommet au graph.
-	void afficher();
+  sommet* ajout_somm(int);
+  void affiche_liste();
+
+  friend class graph;
 };
 
+void listevoisin::affiche_liste(){
+      sommet* tmp=new sommet;
+      tmp=head;
+      while (tmp->suivant!=NULL) {
+          tmp->affichesomm();
+          cout<<",";
+          tmp=tmp->suivant;
+      }
+}
 
-Graph::Graph() {
-	somdugraph = new vector<sommet>[];
+sommet* listevoisin::ajout_somm(int vals){
+        sommet*tmp=cree_somm(vals);
+        sommet*ntmp=head;
+        while(ntmp->suivant!=NULL){
+          ntmp=ntmp->suivant;
+        }
+        ntmp->suivant=tmp;
+        return ntmp;
+
 }
 
 
+class graph{
+      int nbsommet;
 
-void Graph::ajo_som_graph(sommet& s) {
-	//s est le sommet a ajouter a notre graph
-	somdugraph->push_back(s);
-}
-void Graph::afficher() {
-	for (auto i = somdugraph->begin(); i < somdugraph->end(); i++) {
-		somdugraph[i].afficheS();
-		cout << endl;
-	}
+    public:
+      vector<listevoisin> *gra;//notre  graph
+        graph(int);
+        void affiche_graph();
+
+
+};
+
+graph::graph(int nbsommet){
+    this->nbsommet=nbsommet;
+    gra=new vector<listevoisin> ;
+    //gra->resize(nbsommet);
+
 }
 
-int main() {
-	
-	Graph A;
-	sommet a(1);
-	sommet b(3);
-	sommet c(2);
-	a.ajouterunsommet(b);
-	b.ajouterunsommet(a);
-	b.ajouterunsommet(c);
-	A.ajo_som_graph(a);
-	A.ajo_som_graph(b);
-	A.ajo_som_graph(c);
-	A.afficher();
-	return 0;
+void graph::affiche_graph(){
+      //vector<listevoisin>::iterator ptr;
+      cout<<"the graph elements are:"<<endl;
+      for(auto ptr=gra->begin();ptr < gra.end();ptr++){
+          cout<<"hhhhhhh";
+          ptr->affiche_liste();
+      }
+}
+
+int main(){
+      graph G(5);
+      for(auto i=G.gra->begin();i<G.gra->end();i++){
+          *i->ajout_somm(2);
+          *i->ajout_somm(3);
+          *i->ajout_somm(0);
+      }
+
+      G.affiche_graph();
 
 }
